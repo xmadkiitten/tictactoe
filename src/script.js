@@ -1,35 +1,57 @@
 var currentPlayer = 'x';
 var messageDefault = "Have Fun!"
+var totalShots = 0;
 
-function setMarker() {
+async function setMarker() {
     //click buttons
     if (this.innerHTML == '') { // wenn btn geklickt ist
-        this.innerText = currentPlayer;
-        changePlayer();
-        detectWin();
+        totalShots++;
+        this.innerText = 'x';
+        await changePlayer();
+        await detectWin();        
     }
+    //console.log("Total Shots: " + totalShots);
 }
 
 function changePlayer() {
 
     if (currentPlayer == "x") {
         currentPlayer = "o";
+        kiShot();
     }
-    else if (currentPlayer == "o") {
+    else if (currentPlayer == "o") {                
         currentPlayer = "x";
+    }    
+}
+
+function kiShot() {
+
+    if (tryToShoot()) {
+        currentPlayer = 'x';        
+    };
+    
+}
+
+function tryToShoot() {
+    let fields = document.getElementsByTagName("button");
+    let randomNo = getRandomInt(0,8);
+    //console.log("#### TryToShoot: "+ randomNo + "#####");
+    if (fields[randomNo].innerHTML == '') {
+        //console.log("SET MARKER "+randomNo)
+        fields[randomNo].innerHTML ='o'
+        totalShots++;
+        return true;
+    } else {
+        tryToShoot();
     }
 }
 
-/**bedingung if
-wenn bei 0 und 1 und 2 jeweils ein X oder jeweils ein O gesetzt wurde, dann gewonnen
-wenn bei 3 und 4 und 5 jeweils ein X oder jeweils ein O gesetzt wurde, dann gewonnen
-wenn bei 6 und 7 und 8 jeweils ein X oder jeweils ein O gesetzt wurde, dann gewonnen
-wenn bei 0 und 3 und 6 jeweils ein X oder jeweils ein O gesetzt wurde, dann gewonnen
-wenn bei 1 und 4 und 7 jeweils ein X oder jeweils ein O gesetzt wurde, dann gewonnen
-wenn bei 2 und 5 und 8 jeweils ein X oder jeweils ein O gesetzt wurde, dann gewonnen
-wenn bei 0 und 4 und 8 jeweils ein X oder jeweils ein O gesetzt wurde, dann gewonnen
-wenn bei 2 und 4 und 6 jeweils ein X oder jeweils ein O gesetzt wurde, dann gewonnen
-*/
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
 function detectWin() {
 
     var field = document.getElementsByTagName("button");
@@ -42,9 +64,8 @@ function detectWin() {
         threeInRow(field[2], field[5], field[8]) ||
         threeInRow(field[0], field[4], field[8]) ||
         threeInRow(field[2], field[4], field[6])) {
-        document.getElementById("message").innerHTML = "You Won!";
+        document.getElementById("message").innerHTML = "Player " + currentPlayer + " has won!";
         document.getElementById("message").classList = 'animate__animated animate__wobble';
-
         for (let i = 0; i < field.length - 1; i++) {
             field[i].removeEventListener('click', setMarker);
         }
@@ -84,6 +105,8 @@ function init() {
 
 function resetAll() {
     var buttons = document.getElementsByTagName('button');
+    currentPlayer = "x";
+    totalShots = 0;
     for (var i = 0; i < buttons.length - 1; i++) {
         buttons[i].innerHTML = "";
     }    
@@ -92,7 +115,3 @@ function resetAll() {
 
 //document.getElementsByTagName('button')
 init();
-
-function stop() {
-    if (detectWin = true);
-}
